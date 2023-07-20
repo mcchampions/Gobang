@@ -1,13 +1,12 @@
 package me.qscbm.gobang;
 
-import java.security.KeyPair;
 import java.util.*;
 
 public class Util {
     //0黑，1白，2平局，3无结束
-    public static int isEnd() {
+    public static int isEnd(boolean isPlayer) {
         boolean flag = false;
-        int pawn = Game.qc;
+        int pawn = isPlayer ? Game.playerPawn : (Game.playerPawn == 1 ? 2 : 1);
         int[][] temp = Game.data;
         for (int i = 0;i<15;i++) {
             if (flag) {
@@ -36,7 +35,7 @@ public class Util {
                         for (int k = 0; k < upRow; k++) {
                             sb.append(temp[i - k - 1][j] == pawn ? 1 : 0);
                         }
-                        if (returnPos(sb.toString(), pos, 1).getValue() == 10) {
+                        if (returnPos(sb.toString(), pos, 1).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -47,7 +46,7 @@ public class Util {
                         for (int k = 0; k < downRow; k++) {
                             sb.append(temp[i + k + 1][j] == pawn ? 1 : 0);
                         }
-                        if (returnPos(sb.toString(), pos, 2).getValue() == 10) {
+                        if (returnPos(sb.toString(), pos, 2).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -58,7 +57,7 @@ public class Util {
                         for (int k = 0; k < leftRow; k++) {
                             sb.append(temp[i][j - k - 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos(sb.toString(), pos, 3).getValue() == 10) {
+                        if (returnPos(sb.toString(), pos, 3).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -69,7 +68,7 @@ public class Util {
                         for (int k = 0; k < rightRow; k++) {
                             sb.append(temp[i][j + k + 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos(sb.toString(), pos, 4).getValue() == 10) {
+                        if (returnPos(sb.toString(), pos, 4).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -82,7 +81,7 @@ public class Util {
                         for (int k = 0; k < tempInt; k++) {
                             sb.append(temp[i - k - 1][j - k - 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos1(sb.toString(), pos, 1).getValue() == 10) {
+                        if (returnPos1(sb.toString(), pos, 1).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -94,7 +93,7 @@ public class Util {
                         for (int k = 0; k < tempInt; k++) {
                             sb.append(temp[i + k + 1][j + k + 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos1(sb.toString(), pos, 2).getValue() == 10) {
+                        if (returnPos1(sb.toString(), pos, 2).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -106,7 +105,7 @@ public class Util {
                         for (int k = 0; k < tempInt; k++) {
                             sb.append(temp[i + k + 1][j - k - 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos1(sb.toString(), pos, 3).getValue() == 10) {
+                        if (returnPos1(sb.toString(), pos, 3).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -118,7 +117,7 @@ public class Util {
                         for (int k = 0; k < tempInt; k++) {
                             sb.append(temp[i - k - 1][j + k + 1] == pawn ? 1 : 0);
                         }
-                        if (returnPos1(sb.toString(), pos, 4).getValue() == 10) {
+                        if (returnPos1(sb.toString(), pos, 4).getValue() == 100) {
                             flag = true;
                             break;
                         }
@@ -255,6 +254,18 @@ public class Util {
             }
         }
         final Pos[] p = new Pos[]{new Pos(new Random().nextInt(15), new Random().nextInt(15), 0)};
+        Map<String,Double> map = new HashMap<>();
+        List<Pos> pL = posList.stream().toList();
+        pL.forEach(pos -> {
+            String str = pos.getX() + "," + pos.getY();
+            double d = pos.getValue();
+            if (map.containsKey(str)) {
+                d = Math.max(map.get(str),pos.getValue()) + 0.05;
+                posList.remove(pos);
+                posList.add(new Pos(pos.getX(),pos.getY(),d));
+            }
+            map.put(str, d);
+        });
         posList.forEach(pos -> {
             if (pos.getValue() > p[0].getValue()) {
                 if (temp[pos.getY()][pos.getX()] == 0 ) {
@@ -279,8 +290,35 @@ public class Util {
     public static Pos returnPos(String s,Pos pos,int i) {
         switch (s) {
             case "10":
+                if (i == 1) {
+                    return new Pos(pos.getX(),pos.getY()-1,0.6);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(),pos.getY()+1,0.6);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY(),0.6);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY(),0.6);
+                }
             case "100":
+                if (i == 1) {
+                    return new Pos(pos.getX(),pos.getY()-1,0.7);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(),pos.getY()+1,0.7);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY(),0.7);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY(),0.7);
+                }
             case "1000":
+                if (i == 1) {
+                    return new Pos(pos.getX(),pos.getY()-1,0.8);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(),pos.getY()+1,0.8);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY(),0.8);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY(),0.8);
+                }
             case "10000":
                 if (i == 1) {
                     return new Pos(pos.getX(),pos.getY()-1,1);
@@ -291,8 +329,26 @@ public class Util {
                 } else {
                     return new Pos(pos.getX()+1,pos.getY(),1);
                 }
-            case "110":    
+            case "110":
+                if (i == 1) {
+                    return new Pos(pos.getX(),pos.getY()-2,0.8);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(),pos.getY()+2,0.8);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-2,pos.getY(),0.8);
+                } else {
+                    return new Pos(pos.getX()+2,pos.getY(),0.8);
+                }
             case "1100":
+                if (i == 1) {
+                    return new Pos(pos.getX(),pos.getY()-2,0.9);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(),pos.getY()+2,0.9);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-2,pos.getY(),0.9);
+                } else {
+                    return new Pos(pos.getX()+2,pos.getY(),0.9);
+                }
             case "11000":
                 if (i == 1) {
                     return new Pos(pos.getX(),pos.getY()-2,2);
@@ -305,17 +361,39 @@ public class Util {
                 }
             case "101":
                 if (i == 1) {
-                    return new Pos(pos.getX(), pos.getY() - 1, 2);
+                    return new Pos(pos.getX(), pos.getY() - 1, 0.75);
                 } else if (i == 2) {
-                    return new Pos(pos.getX(), pos.getY() + 1, 2);
+                    return new Pos(pos.getX(), pos.getY() + 1, 0.75);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 1, pos.getY(), 2);
+                    return new Pos(pos.getX() - 1, pos.getY(), 0.75);
                 } else {
-                    return new Pos(pos.getX() + 1, pos.getY(), 2);
+                    return new Pos(pos.getX() + 1, pos.getY(), 0.75);
                 }
-            case "1010":    
-            case "10100":
+            case "1010":
                 Random random = new Random();
+                if (random.nextInt(2) == 1) {
+                    if (i == 1) {
+                        return new Pos(pos.getX(), pos.getY() - 3, 0.9);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX(), pos.getY() + 3, 0.9);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 3, pos.getY(), 0.9);
+                    } else {
+                        return new Pos(pos.getX() + 3, pos.getY(), 0.9);
+                    }
+                } else {
+                    if (i == 1) {
+                        return new Pos(pos.getX(), pos.getY() - 1, 0.9);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX(), pos.getY() + 1, 0.9);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 1, pos.getY(), 0.9);
+                    } else {
+                        return new Pos(pos.getX() + 1, pos.getY(), 0.9);
+                    }
+                }
+            case "10100":
+                random = new Random();
                 if (random.nextInt(2) == 1) {
                     if (i == 1) {
                         return new Pos(pos.getX(), pos.getY() - 3, 2);
@@ -338,6 +416,28 @@ public class Util {
                     }
                 }
             case "1001":
+                random = new Random();
+                if (random.nextInt(2) == 1) {
+                    if (i == 1) {
+                        return new Pos(pos.getX(), pos.getY() - 2, 0.8);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX(), pos.getY() + 2, 0.8);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 2, pos.getY(), 0.8);
+                    } else {
+                        return new Pos(pos.getX() +2, pos.getY(), 0.8);
+                    }
+                } else {
+                    if (i == 1) {
+                        return new Pos(pos.getX(), pos.getY() - 1, 0.8);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX(), pos.getY() + 1, 0.8);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 1, pos.getY(), 0.8);
+                    } else {
+                        return new Pos(pos.getX() + 1, pos.getY(), 0.8);
+                    }
+                }
             case "10010":
                 random = new Random();
                 if (random.nextInt(2) == 1) {
@@ -385,6 +485,15 @@ public class Util {
                     }
                 }
             case "1110":
+                if (i == 1) {
+                    return new Pos(pos.getX(), pos.getY() - 3, 0.9);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(), pos.getY() + 3, 0.9);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 3, pos.getY(), 0.9);
+                } else {
+                    return new Pos(pos.getX() + 3, pos.getY(), 0.9);
+                }
             case "11100":
                 if (i == 1) {
                     return new Pos(pos.getX(), pos.getY() - 3, 4);
@@ -396,6 +505,15 @@ public class Util {
                     return new Pos(pos.getX() + 3, pos.getY(), 4);
                 }
             case "1101":
+                if (i == 1) {
+                    return new Pos(pos.getX(), pos.getY() - 2, 0.8);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(), pos.getY() + 2, 0.8);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 2, pos.getY(), 0.8);
+                } else {
+                    return new Pos(pos.getX() + 2, pos.getY(), 0.8);
+                }
             case "11010":
                 if (i == 1) {
                     return new Pos(pos.getX(), pos.getY() - 2, 4);
@@ -407,6 +525,15 @@ public class Util {
                     return new Pos(pos.getX() + 2, pos.getY(), 4);
                 }
             case "1011":
+                if (i == 1) {
+                    return new Pos(pos.getX(), pos.getY() - 1, 0.8);
+                } else if (i == 2) {
+                    return new Pos(pos.getX(), pos.getY() + 1, 0.8);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 1, pos.getY(), 0.8);
+                } else {
+                    return new Pos(pos.getX() + 1, pos.getY(), 0.8);
+                }
             case "10110":
                 if (i == 1) {
                     return new Pos(pos.getX(), pos.getY() - 1, 4);
@@ -419,46 +546,46 @@ public class Util {
                 }
             case "11110":
                 if (i == 1) {
-                    return new Pos(pos.getX(), pos.getY() - 4, 5);
+                    return new Pos(pos.getX(), pos.getY() - 4, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX(), pos.getY() + 4, 5);
+                    return new Pos(pos.getX(), pos.getY() + 4, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 4, pos.getY(), 5);
+                    return new Pos(pos.getX() - 4, pos.getY(), 8);
                 } else {
-                    return new Pos(pos.getX() + 4, pos.getY(), 5);
+                    return new Pos(pos.getX() + 4, pos.getY(), 8);
                 }
             case "11101":
                 if (i == 1) {
-                    return new Pos(pos.getX(), pos.getY() - 3, 5);
+                    return new Pos(pos.getX(), pos.getY() - 3, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX(), pos.getY() + 3, 5);
+                    return new Pos(pos.getX(), pos.getY() + 3, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 3, pos.getY(), 5);
+                    return new Pos(pos.getX() - 3, pos.getY(), 8);
                 } else {
-                    return new Pos(pos.getX() + 3, pos.getY(), 5);
+                    return new Pos(pos.getX() + 3, pos.getY(), 8);
                 }
             case "11011":
                 if (i == 1) {
-                    return new Pos(pos.getX(), pos.getY() - 2, 5);
+                    return new Pos(pos.getX(), pos.getY() - 2, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX(), pos.getY() + 2, 5);
+                    return new Pos(pos.getX(), pos.getY() + 2, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 2, pos.getY(), 5);
+                    return new Pos(pos.getX() - 2, pos.getY(), 8);
                 } else {
-                    return new Pos(pos.getX() + 2, pos.getY(), 5);
+                    return new Pos(pos.getX() + 2, pos.getY(), 8);
                 }
             case "10111":
                 if (i == 1) {
-                    return new Pos(pos.getX(), pos.getY() - 1, 5);
+                    return new Pos(pos.getX(), pos.getY() - 1, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX(), pos.getY() + 1, 5);
+                    return new Pos(pos.getX(), pos.getY() + 1, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 1, pos.getY(), 5);
+                    return new Pos(pos.getX() - 1, pos.getY(), 8);
                 } else {
-                    return new Pos(pos.getX() + 1, pos.getY(), 5);
+                    return new Pos(pos.getX() + 1, pos.getY(), 8);
                 }
             case "11111":
-                return new Pos(0,0,10);
+                return new Pos(0,0,100);
             default:
                 return new Pos(new Random().nextInt(15),new Random().nextInt(15),1);
         }
@@ -468,8 +595,35 @@ public class Util {
     public static Pos returnPos1(String s,Pos pos,int i) {
         switch (s) {
             case "10":
+                if (i == 1) {
+                    return new Pos(pos.getX()-1,pos.getY()-1,0.1);
+                } else if (i == 2) {
+                    return new Pos(pos.getX()+1,pos.getY()+1,0.1);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY()+1,0.1);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY()-1,0.1);
+                }
             case "100":
+                if (i == 1) {
+                    return new Pos(pos.getX()-1,pos.getY()-1,0.1);
+                } else if (i == 2) {
+                    return new Pos(pos.getX()+1,pos.getY()+1,0.1);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY()+1,0.1);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY()-1,0.1);
+                }
             case "1000":
+                if (i == 1) {
+                    return new Pos(pos.getX()-1,pos.getY()-1,0.6);
+                } else if (i == 2) {
+                    return new Pos(pos.getX()+1,pos.getY()+1,0.6);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-1,pos.getY()+1,0.6);
+                } else {
+                    return new Pos(pos.getX()+1,pos.getY()-1,0.6);
+                }
             case "10000":
                 if (i == 1) {
                     return new Pos(pos.getX()-1,pos.getY()-1,1);
@@ -481,7 +635,25 @@ public class Util {
                     return new Pos(pos.getX()+1,pos.getY()-1,1);
                 }
             case "110":
+                if (i == 1) {
+                    return new Pos(pos.getX() - 2,pos.getY() - 2, 0.2);
+                } else if (i == 2) {
+                    return new Pos(pos.getX() + 2,pos.getY() + 2, 0.2);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-2,pos.getY(),0.2);
+                } else {
+                    return new Pos(pos.getX()+2,pos.getY(),0.2);
+                }
             case "1100":
+                if (i == 1) {
+                    return new Pos(pos.getX() - 2,pos.getY() - 2, 0.3);
+                } else if (i == 2) {
+                    return new Pos(pos.getX() + 2,pos.getY() + 2, 0.3);
+                } else if (i == 3) {
+                    return new Pos(pos.getX()-2,pos.getY(),0.3);
+                } else {
+                    return new Pos(pos.getX()+2,pos.getY(),0.3);
+                }
             case "11000":
                 if (i == 1) {
                     return new Pos(pos.getX() - 2,pos.getY() - 2, 2);
@@ -494,17 +666,39 @@ public class Util {
                 }
             case "101":
                 if (i == 1) {
-                    return new Pos(pos.getX() - 1, pos.getY() - 1, 2);
+                    return new Pos(pos.getX() - 1, pos.getY() - 1, 0.8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX() + 1, pos.getY() + 1, 2);
+                    return new Pos(pos.getX() + 1, pos.getY() + 1, 0.8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 1, pos.getY() + 1, 2);
+                    return new Pos(pos.getX() - 1, pos.getY() + 1, 0.8);
                 } else {
-                    return new Pos(pos.getX() + 1, pos.getY()-1, 2);
+                    return new Pos(pos.getX() + 1, pos.getY()-1, 0.8);
                 }
             case "1010":
-            case "10100":
                 Random random = new Random();
+                if (random.nextInt(2) == 1) {
+                    if (i == 1) {
+                        return new Pos(pos.getX() - 3, pos.getY() - 3, 0.5);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX() + 3, pos.getY() + 3, 0.5);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 3, pos.getY()+3, 0.5);
+                    } else {
+                        return new Pos(pos.getX() + 3, pos.getY()-3, 0.5);
+                    }
+                } else {
+                    if (i == 1) {
+                        return new Pos(pos.getX() - 1, pos.getY() - 1, 0.5);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX() + 1, pos.getY() + 1, 0.5);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 1, pos.getY()+1, 0.5);
+                    } else {
+                        return new Pos(pos.getX() + 1, pos.getY()-1, 0.5);
+                    }
+                }
+            case "10100":
+                random = new Random();
                 if (random.nextInt(2) == 1) {
                     if (i == 1) {
                         return new Pos(pos.getX() - 3, pos.getY() - 3, 2);
@@ -527,6 +721,28 @@ public class Util {
                     }
                 }
             case "1001":
+                random = new Random();
+                if (random.nextInt(2) == 1) {
+                    if (i == 1) {
+                        return new Pos(pos.getX() - 2, pos.getY() - 2, 0.2);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX() + 2, pos.getY() + 2, 0.2);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 2, pos.getY()+2, 0.2);
+                    } else {
+                        return new Pos(pos.getX() +2, pos.getY()-2, 0.2);
+                    }
+                } else {
+                    if (i == 1) {
+                        return new Pos(pos.getX() - 1, pos.getY() - 1, 0.2);
+                    } else if (i == 2) {
+                        return new Pos(pos.getX() + 1, pos.getY() + 1, 0.2);
+                    } else if (i == 3) {
+                        return new Pos(pos.getX() - 1, pos.getY()+1, 0.2);
+                    } else {
+                        return new Pos(pos.getX() + 1, pos.getY()-1, 0.2);
+                    }
+                }
             case "10010":
                 random = new Random();
                 if (random.nextInt(2) == 1) {
@@ -574,6 +790,15 @@ public class Util {
                     }
                 }
             case "1110":
+                if (i == 1) {
+                    return new Pos(pos.getX() - 3, pos.getY() - 3, 0.4);
+                } else if (i == 2) {
+                    return new Pos(pos.getX() + 3, pos.getY() + 3, 0.4);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 3, pos.getY()+3, 0.4);
+                } else {
+                    return new Pos(pos.getX() + 3, pos.getY()-3, 0.4);
+                }
             case "11100":
                 if (i == 1) {
                     return new Pos(pos.getX() - 3, pos.getY() - 3, 4);
@@ -585,6 +810,15 @@ public class Util {
                     return new Pos(pos.getX() + 3, pos.getY()-3, 4);
                 }
             case "1101":
+                if (i == 1) {
+                    return new Pos(pos.getX() - 2, pos.getY() - 2, 0.4);
+                } else if (i == 2) {
+                    return new Pos(pos.getX() + 2, pos.getY() + 2, 0.4);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 2, pos.getY()+2, 0.4);
+                } else {
+                    return new Pos(pos.getX() + 2, pos.getY()-2, 0.4);
+                }
             case "11010":
                 if (i == 1) {
                     return new Pos(pos.getX() - 2, pos.getY() - 2, 4);
@@ -596,6 +830,15 @@ public class Util {
                     return new Pos(pos.getX() + 2, pos.getY()-2, 4);
                 }
             case "1011":
+                if (i == 1) {
+                    return new Pos(pos.getX() - 1, pos.getY() - 1, 0.4);
+                } else if (i == 2) {
+                    return new Pos(pos.getX() + 1, pos.getY() + 1, 0.4);
+                } else if (i == 3) {
+                    return new Pos(pos.getX() - 1, pos.getY()+1, 0.4);
+                } else {
+                    return new Pos(pos.getX() + 1, pos.getY()-1, 0.4);
+                }
             case "10110":
                 if (i == 1) {
                     return new Pos(pos.getX() - 1, pos.getY() - 1, 4);
@@ -608,46 +851,46 @@ public class Util {
                 }
             case "11110":
                 if (i == 1) {
-                    return new Pos(pos.getX() - 4, pos.getY() - 4, 5);
+                    return new Pos(pos.getX() - 4, pos.getY() - 4, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX() + 4, pos.getY() + 4, 5);
+                    return new Pos(pos.getX() + 4, pos.getY() + 4, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 4, pos.getY()+4, 5);
+                    return new Pos(pos.getX() - 4, pos.getY()+4, 8);
                 } else {
-                    return new Pos(pos.getX() + 4, pos.getY()-4, 5);
+                    return new Pos(pos.getX() + 4, pos.getY()-4, 8);
                 }
             case "11101":
                 if (i == 1) {
-                    return new Pos(pos.getX() - 3, pos.getY() - 3, 5);
+                    return new Pos(pos.getX() - 3, pos.getY() - 3, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX() + 3, pos.getY() + 3, 5);
+                    return new Pos(pos.getX() + 3, pos.getY() + 3, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 3, pos.getY()+3, 5);
+                    return new Pos(pos.getX() - 3, pos.getY()+3, 8);
                 } else {
-                    return new Pos(pos.getX() + 3, pos.getY()-3, 5);
+                    return new Pos(pos.getX() + 3, pos.getY()-3, 8);
                 }
             case "11011":
                 if (i == 1) {
-                    return new Pos(pos.getX() - 2, pos.getY() - 2, 5);
+                    return new Pos(pos.getX() - 2, pos.getY() - 2, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX() + 2, pos.getY() + 2, 5);
+                    return new Pos(pos.getX() + 2, pos.getY() + 2, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 2, pos.getY()+2, 5);
+                    return new Pos(pos.getX() - 2, pos.getY()+2, 8);
                 } else {
-                    return new Pos(pos.getX() + 2, pos.getY()-2, 5);
+                    return new Pos(pos.getX() + 2, pos.getY()-2, 8);
                 }
             case "10111":
                 if (i == 1) {
-                    return new Pos(pos.getX() - 1, pos.getY() - 1, 5);
+                    return new Pos(pos.getX() - 1, pos.getY() - 1, 8);
                 } else if (i == 2) {
-                    return new Pos(pos.getX() + 1, pos.getY() + 1, 5);
+                    return new Pos(pos.getX() + 1, pos.getY() + 1, 8);
                 } else if (i == 3) {
-                    return new Pos(pos.getX() - 1, pos.getY()+1, 5);
+                    return new Pos(pos.getX() - 1, pos.getY()+1, 8);
                 } else {
-                    return new Pos(pos.getX() + 1, pos.getY()-1, 5);
+                    return new Pos(pos.getX() + 1, pos.getY()-1, 8);
                 }
             case "11111":
-                return new Pos(0,0,10);
+                return new Pos(0,0,100);
             default:
                 return new Pos(new Random().nextInt(15),new Random().nextInt(15),1);
         }

@@ -22,8 +22,6 @@ public class Game extends JFrame implements MouseListener {
     //同上
     public static int playerPawn = 1;
 
-    public static File jpg = new File("jpg.jpg");
-
     public Game() {
         this.setTitle("QS五子棋");
         this.setSize(800,550);
@@ -42,15 +40,7 @@ public class Game extends JFrame implements MouseListener {
     public void paint(Graphics g) {
         BufferedImage bi = new BufferedImage(800, 550, BufferedImage.TYPE_INT_ARGB);
         Graphics g2 = bi.createGraphics();
-
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(jpg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        g2.drawImage(image, 10, 10, this);
-        g2.setColor(Color.BLACK);//设置画笔颜色
+        g2.setColor(Color.BLACK);
         g2.setFont(new Font("华文行楷", 10, 50));
         g2.drawString("简单五子棋", 525, 100);
         g2.setColor(Color.getHSBColor(30, (float) 0.10, (float) 0.90));
@@ -156,7 +146,7 @@ public class Game extends JFrame implements MouseListener {
                         info = "轮到白子";
                         Pos pos = Util.determineBestPos(false);
                         data[pos.getY()][pos.getX()] = 2;
-                        int wl = Util.isEnd();
+                        int wl = Util.isEnd(false);
 
                         if (wl != 3) {
                             this.repaint();
@@ -170,7 +160,7 @@ public class Game extends JFrame implements MouseListener {
 
                 this.repaint();
 
-                int wl = Util.isEnd();
+                int wl = Util.isEnd(true);
 
                 if (wl != 3) {
                     JOptionPane.showMessageDialog(this, "游戏结束，" + (wl == 0 ? "黑方赢了" : (wl == 1 ? "白方赢了" : "平局")));

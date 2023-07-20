@@ -5,15 +5,15 @@ public class Pos {
 
     private final int y;
 
-    private final int value;
+    private final double value;
 
-    public Pos(int x,int y,int value) {
+    public Pos(int x,int y,double value) {
         this.x = x;
         this.y = y;
         this.value = value;
     }
 
-    public int getValue() {
+    public double getValue() {
         return this.value;
     }
 
